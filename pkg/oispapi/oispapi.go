@@ -1,6 +1,18 @@
 package oispapi
 
-import "net/http"
+import (
+	"net/http"
+	"regexp"
+)
+
+// Oispapi is managing an API session
+type Oispapi struct {
+	token        string
+	url          string
+	accounts     []Account
+	userID       string
+	activAccount int
+}
 
 // Account contains the detail of one account
 type Account struct {
@@ -9,12 +21,44 @@ type Account struct {
 	Role string `json:"role"`
 }
 
-// Oispapi is managing an API session
-type Oispapi struct {
-	token    string
-	url      string
-	accounts []Account
-	userID   string
+// Device contains the device details
+type Device struct {
+	DeviceID   string            `json:"deviceId"`
+	Name       string            `json:"name"`
+	GatewayID  string            `json:"gatewayId"`
+	DomainID   string            `json:"domainId"`
+	Status     string            `json:"status"`
+	Created    int64             `json:"created"`
+	Attributes map[string]string `json:"attributes"`
+	Tags       []string          `json:"tags"`
+	Components []Component       `json:"components"`
+	Contact    string            `json:"contact"`
+}
+
+// Component reprecents a single device component
+type Component struct {
+	CID             string        `json:"cid"`
+	Name            string        `json:"name"`
+	ComponentTypeID string        `json:"componentTypeId"`
+	Type            string        `json:"type"`
+	ComponentType   ComponentType `json:"componentType"`
+}
+
+// ComponentType describe the details of a component type
+type ComponentType struct {
+	CTID        string `json:"_id"`
+	ID          string `json:"id"`
+	DomainID    string `json:"domainID"`
+	Dimension   string `json:"dimension"`
+	Default     string `json:"default"`
+	Display     string `json:"display"`
+	Format      string `json:"format"`
+	Measureunit string `json:"measureunit"`
+	Version     string `json:"version"`
+	Type        string `json:"type"`
+	DataType    string `json:"dataType"`
+	Min         string `json:"min"`
+	Max         string `json:"max"`
 }
 
 func setAuthHeader(req *http.Request, token string) {
@@ -50,6 +94,15 @@ func NewOispAPIFromUser(username string, password string, url string) (*Oispapi,
 		return nil, err
 	}
 	return o, nil
+}
+
+func makeURL(url string, path string, replacements map[string]string) string {
+	replaced := path
+	for k, v := range replacements {
+		re := regexp.MustCompile(`(\{` + k + `\})`)
+		replaced = re.ReplaceAllString(replaced, v)
+	}
+	return url + replaced
 }
 
 // GetToken returns the access token value

@@ -17,11 +17,17 @@ func main() {
 	if err != nil {
 		fmt.Println("Error while trying to get token", err)
 	}
-	fmt.Print("Received token ", api)
+	fmt.Println("Received token ", api)
 
 	api, err = oispapi.NewOispAPIFromToken(api.GetToken(), url)
 	if err != nil {
 		fmt.Println("Error while trying to get token", err)
 	}
-	fmt.Print("Received token ", api)
+	fmt.Println("Received token ", api)
+
+	devices, err := api.GetDevices()
+	if err != nil {
+		fmt.Println("Error while trying to get devices", err)
+	}
+	fmt.Print("Retrieved devices: ", devices)
 }
