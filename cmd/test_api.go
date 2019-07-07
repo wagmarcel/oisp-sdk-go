@@ -29,7 +29,7 @@ func main() {
 	if err != nil {
 		fmt.Println("Error while trying to get devices", err)
 	}
-	fmt.Print("Retrieved devices: ", devices)
+	fmt.Println("Retrieved devices: ", devices)
 
 	device := oispapi.Device{
 		DeviceID:  "11-22-33-44-55-66",
@@ -40,9 +40,14 @@ func main() {
 
 	err = api.CreateDevice(&device)
 	if err != nil {
-		fmt.Print("Error while creating device:", err)
+		fmt.Println("Error while creating device:", err)
 	} else {
 		fmt.Println("Device created")
 	}
 
+	newdevice, err := api.GetOneDevice(device.DeviceID)
+	if err != nil {
+		fmt.Println("Error while retrieving device: ", err)
+	}
+	fmt.Println("Device retrieved: ", newdevice)
 }
