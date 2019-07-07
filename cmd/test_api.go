@@ -30,4 +30,19 @@ func main() {
 		fmt.Println("Error while trying to get devices", err)
 	}
 	fmt.Print("Retrieved devices: ", devices)
+
+	device := oispapi.Device{
+		DeviceID:  "11-22-33-44-55-66",
+		Name:      "MyGoDevice",
+		Tags:      []string{"hello", "world"},
+		GatewayID: "mygogateway",
+	}
+
+	err = api.CreateDevice(&device)
+	if err != nil {
+		fmt.Print("Error while creating device:", err)
+	} else {
+		fmt.Println("Device created")
+	}
+
 }

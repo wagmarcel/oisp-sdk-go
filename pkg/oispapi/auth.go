@@ -57,7 +57,7 @@ func (o *Oispapi) getAuthTokenInfo() error {
 
 	client := &http.Client{}
 	req, _ := http.NewRequest("GET", o.url+getAuthTokenInfoPath, nil)
-	setAuthHeader(req, o.token)
+	setHeaders(req, o.token)
 	response, err := client.Do(req)
 	if err != nil {
 		return err

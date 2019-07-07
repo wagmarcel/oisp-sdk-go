@@ -23,16 +23,18 @@ type Account struct {
 
 // Device contains the device details
 type Device struct {
-	DeviceID   string            `json:"deviceId"`
-	Name       string            `json:"name"`
-	GatewayID  string            `json:"gatewayId"`
-	DomainID   string            `json:"domainId"`
-	Status     string            `json:"status"`
-	Created    int64             `json:"created"`
-	Attributes map[string]string `json:"attributes"`
-	Tags       []string          `json:"tags"`
-	Components []Component       `json:"components"`
-	Contact    string            `json:"contact"`
+	DeviceID    string            `json:"deviceId"`
+	Name        string            `json:"name"`
+	GatewayID   string            `json:"gatewayId"`
+	DomainID    string            `json:"domainId,omitempty"`
+	Status      string            `json:"status,omitempty"`
+	Created     int64             `json:"created,omitempty"`
+	Attributes  map[string]string `json:"attributes,omitempty"`
+	Tags        []string          `json:"tags,omitempty"`
+	Components  []Component       `json:"components,omitempty"`
+	Contact     string            `json:"contact,omitempty"`
+	Loc         []float64         `json:"loc,omitempty"`
+	Description string            `json:"desription,omitempty"`
 }
 
 // Component reprecents a single device component
@@ -61,8 +63,9 @@ type ComponentType struct {
 	Max         string `json:"max"`
 }
 
-func setAuthHeader(req *http.Request, token string) {
+func setHeaders(req *http.Request, token string) {
 	req.Header.Set("Authorization", "Bearer "+token)
+	req.Header.Set("Content-Type", "application/json")
 }
 
 // NewOispAPIFromToken is initiating the Oispapi struct from a user token
