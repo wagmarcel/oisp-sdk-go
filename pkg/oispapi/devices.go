@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 )
@@ -33,7 +32,6 @@ func (o *Oispapi) GetDevices() (*[]Device, error) {
 	}
 	responseObject := []Device{}
 	json.Unmarshal(responseData, &responseObject)
-	fmt.Println(string(responseData))
 	return &responseObject, nil
 }
 
@@ -44,7 +42,6 @@ func (o *Oispapi) CreateDevice(device *Device) error {
 	replacements := map[string]string{"accountId": o.accounts[o.activAccount].ID}
 	url := makeURL(o.url, getDevicesPath, replacements)
 	jsonBody, _ := json.Marshal(device)
-	fmt.Println("Marcel209", string(jsonBody))
 	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(jsonBody))
 	setHeaders(req, o.token)
 	response, err := client.Do(req)
@@ -61,12 +58,11 @@ func (o *Oispapi) CreateDevice(device *Device) error {
 	}
 	responseObject := []Device{}
 	json.Unmarshal(responseData, &responseObject)
-	fmt.Println(string(responseData))
 	return nil
 }
 
-//GetOneDevice is retrieving the list of devices of active account
-func (o *Oispapi) GetOneDevice(deviceID string) (*Device, error) {
+//GetDevice is retrieving the list of devices of active account
+func (o *Oispapi) GetDevice(deviceID string) (*Device, error) {
 	client := &http.Client{}
 	replacements := map[string]string{
 		"accountId": o.accounts[o.activAccount].ID,
@@ -89,6 +85,61 @@ func (o *Oispapi) GetOneDevice(deviceID string) (*Device, error) {
 	}
 	responseObject := Device{}
 	json.Unmarshal(responseData, &responseObject)
-	fmt.Println(string(responseData))
 	return &responseObject, nil
+}
+
+//UpdateDevice is updating a new device
+func (o *Oispapi) UpdateDevice(device *Device) error {
+	client := &http.Client{}
+
+	replacements := map[string]string{"accountId": o.accounts[o.activAccount].ID,
+		"deviceId": device.DeviceID,
+	}
+	url := makeURL(o.url, getOneDevicePath, replacements)
+	updatedDevice := Device(*device)
+	updatedDevice.DeviceID = ""
+	jsonBody, _ := json.Marshal(updatedDevice)
+	req, _ := http.NewRequest("PUT", url, bytes.NewBuffer(jsonBody))
+	setHeaders(req, o.token)
+	response, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer response.Body.Close()
+	responseData, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return err
+	}
+	if response.StatusCode != 200 {
+		return errors.New(string(responseData))
+	}
+	responseObject := []Device{}
+	json.Unmarshal(responseData, &responseObject)
+	return nil
+}
+
+//DeleteDevice is deleting a device
+func (o *Oispapi) DeleteDevice(deviceID string) error {
+	client := &http.Client{}
+	replacements := map[string]string{
+		"accountId": o.accounts[o.activAccount].ID,
+		"deviceId":  deviceID,
+	}
+	url := makeURL(o.url, getOneDevicePath, replacements)
+	req, _ := http.NewRequest("DELETE", url, nil)
+	setHeaders(req, o.token)
+	response, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer response.Body.Close()
+	responseData, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return err
+	}
+	if response.StatusCode != 204 {
+		return errors.New(string(responseData))
+	}
+
+	return nil
 }

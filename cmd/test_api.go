@@ -42,12 +42,32 @@ func main() {
 	if err != nil {
 		fmt.Println("Error while creating device:", err)
 	} else {
-		fmt.Println("Device created")
+		fmt.Println("Device created successfully")
 	}
 
-	newdevice, err := api.GetOneDevice(device.DeviceID)
+	newdevice, err := api.GetDevice(device.DeviceID)
 	if err != nil {
 		fmt.Println("Error while retrieving device: ", err)
 	}
 	fmt.Println("Device retrieved: ", newdevice)
+
+	updateDevice := oispapi.Device{
+		DeviceID:  device.DeviceID,
+		Name:      "MyGoDevice2",
+		Tags:      []string{"hello2", "world2"},
+		GatewayID: "mygogateway2",
+	}
+	err = api.UpdateDevice(&updateDevice)
+	if err != nil {
+		fmt.Println("Error while updating device:", err)
+	} else {
+		fmt.Println("Device updated successfully")
+	}
+
+	err = api.DeleteDevice(device.DeviceID)
+	if err != nil {
+		fmt.Println("Error deleting device:", err)
+	} else {
+		fmt.Println("Device deleted successfully")
+	}
 }

@@ -23,9 +23,9 @@ type Account struct {
 
 // Device contains the device details
 type Device struct {
-	DeviceID    string            `json:"deviceId"`
-	Name        string            `json:"name"`
-	GatewayID   string            `json:"gatewayId"`
+	DeviceID    string            `json:"deviceId,omitempty"`
+	Name        string            `json:"name,omitempty"`
+	GatewayID   string            `json:"gatewayId,omitempty"`
 	DomainID    string            `json:"domainId,omitempty"`
 	Status      string            `json:"status,omitempty"`
 	Created     int64             `json:"created,omitempty"`
