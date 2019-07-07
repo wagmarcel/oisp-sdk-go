@@ -14,10 +14,14 @@ func main() {
 	url := os.Getenv("OISP_URL")
 
 	api, err := oispapi.NewOispAPIFromUser(username, password, url)
-
 	if err != nil {
-		fmt.Print("Error while trying to get token", err)
+		fmt.Println("Error while trying to get token", err)
 	}
+	fmt.Print("Received token ", api)
 
+	api, err = oispapi.NewOispAPIFromToken(api.GetToken(), url)
+	if err != nil {
+		fmt.Println("Error while trying to get token", err)
+	}
 	fmt.Print("Received token ", api)
 }
